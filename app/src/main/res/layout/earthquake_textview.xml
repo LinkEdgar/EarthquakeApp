@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="?android:attr/listPreferredItemHeight"
+    android:orientation="horizontal"
+    android:paddingEnd="16dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingStart="16dp">
+    <TextView
+        android:fontFamily="sans-serif-medium"
+        android:gravity="center"
+        android:textColor="@android:color/white"
+        android:layout_gravity="center_vertical"
+        android:background="@drawable/magnitude_circle"
+        android:id="@+id/magnitude_textview"
+        android:textSize="16sp"
+        tools:text="7.2"
+        android:layout_width="36dp"
+        android:layout_height="36dp" />
+    <LinearLayout
+        android:layout_marginLeft="16dp"
+        android:orientation="vertical"
+        android:layout_weight="2"
+        android:layout_width="0dp"
+        android:layout_height="match_parent">
+     <TextView
+         android:textSize="12sp"
+         android:fontFamily="sans-serif-medium"
+         android:maxLines="1"
+         android:textAllCaps="true"
+         android:textColor="@color/textColorEarthquakeDetails"
+         android:gravity="bottom"
+         tools:text="64 km from"
+         android:id="@+id/distance_from_city"
+         android:layout_weight="1"
+         android:layout_width="match_parent"
+         android:layout_height="0dp" />
+    <TextView
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:textColor="@color/textColorEarthquakeLocation"
+        android:layout_weight="1"
+        android:id="@+id/city_textview"
+        android:textSize="16sp"
+        tools:text="Tokyo"
+        android:layout_width="match_parent"
+        android:layout_height="0dp" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:layout_width="0dp"
+        android:layout_height="match_parent">
+    <TextView
+        android:textColor="@color/textColorEarthquakeDetails"
+        android:textSize="12sp"
+        android:gravity="bottom"
+        android:id="@+id/date_texview"
+        android:layout_weight="1"
+        tools:text="Jan 28, 2000"
+        android:layout_width="match_parent"
+        android:layout_height="0dp" />
+        <TextView
+            android:layout_weight="1"
+            tools:text="12AM"
+            android:textColor="@color/textColorEarthquakeDetails"
+            android:textSize="12sp"
+            android:id="@+id/time_textview"
+            android:layout_width="match_parent"
+            android:layout_height="0dp" />
+    </LinearLayout>
+
+</LinearLayout>
