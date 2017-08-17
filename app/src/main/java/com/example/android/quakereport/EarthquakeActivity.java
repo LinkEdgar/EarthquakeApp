@@ -16,8 +16,11 @@
 package com.example.android.quakereport;
 import android.app.LoaderManager;
 import android.app.LoaderManager.LoaderCallbacks;
+import android.content.Context;
 import android.content.Intent;
  import android.content.Loader;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
  import android.os.AsyncTask;
 import android.os.Bundle;
@@ -26,6 +29,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -40,14 +44,17 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderCallb
     public static final String LOG_TAG = EarthquakeActivity.class.getName();
     //specify the ID of our loader which can be anything when we only have one loader
     private static final int EARTHQUAKE_LOADER_ID = 1;
-
+    //Sets the message when we cannot update the Listview
     private TextView emptyTextView;
+    private ProgressBar progressBar;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.earthquake_activity);
         emptyTextView = (TextView) findViewById(R.id.empty_view);
+        progressBar = (ProgressBar) findViewById(R.id.loading_indicator);
 
         // Create a fake list of earthquake locations.
         //final ArrayList<Earthquake> earthquakes = QueryUtils.extractEarthquakes();
@@ -84,10 +91,26 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderCallb
             }
         });
 
-        //LoaderAsyncTask instantiation
-        LoaderManager loaderManager = getLoaderManager();
+        ConnectivityManager cm =
+                (ConnectivityManager)getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 
-        loaderManager.initLoader(EARTHQUAKE_LOADER_ID, null,this);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+        if(!isConnected){
+            emptyTextView.setText("No Internet Connection");
+            progressBar.setVisibility(View.INVISIBLE);
+
+
+        }
+        else{
+            emptyTextView.setText("No Earthquakes Found");
+            //LoaderAsyncTask instantiation
+            LoaderManager loaderManager = getLoaderManager();
+            loaderManager.initLoader(EARTHQUAKE_LOADER_ID, null,this);
+        }
+
+
 
     }
     //callsbacks do all of the work in terms of updating UI and etc
@@ -95,6 +118,8 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderCallb
     public Loader<List<Earthquake>> onCreateLoader(int EARTHQUAKE_LOADER_ID, Bundle args) {
         Log.e("onCreateLoader","Loader created ");
         //TODO create a new loader for giver URL
+        progressBar.setVisibility(View.VISIBLE);
+        emptyTextView.setVisibility(View.INVISIBLE);
         return new EarthquakeLoader(this,USGS_REQUEST_URL);
     }
 
@@ -109,8 +134,11 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderCallb
         // If there is a valid list of {@link Earthquake}s, then add them to the adapter's
         // data set. This will trigger the ListView to update.
         if (earthquakes != null && !earthquakes.isEmpty()) {
+            //In order to check the null state and what the UI does if the list comes back empty comment out the next line
             adapter.addAll(earthquakes);
         }
+        progressBar.setVisibility(View.INVISIBLE);
+
     }
 
     @Override
@@ -129,18 +157,22 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderCallb
         //pass in the url of the API we wish to retrieve data from
         @Override
         protected List<Earthquake> doInBackground(String... strings) {
-            if(strings.length <1 || strings[0] == null){
-                return null;
-            }
-            List<Earthquake> result = QueryUtils.getArrayList(strings[0]);
-            return result;
+
+
+
+                if (strings.length < 1 || strings[0] == null) {
+                    return null;
+                }
+                List<Earthquake> result = QueryUtils.getArrayList(strings[0]);
+                return result;
+
         }
         //update the UI
         @Override
         protected void onPostExecute(List<Earthquake> data) {
             adapter.clear();
             if(adapter != null ||!data.isEmpty()){
-                adapter.addAll(data);
+               adapter.addAll(data);
             }
         }
     }
